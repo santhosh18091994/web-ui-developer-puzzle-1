@@ -30,8 +30,8 @@ export class ReadingListEffects implements OnInitEffects {
       concatMap(({ book }) =>
         this.http.post('/api/reading-list', book).pipe(
           map(() => ReadingListActions.confirmedAddToReadingList({ book })),
-          catchError(() =>
-            of(ReadingListActions.failedAddToReadingList({ book }))
+          catchError((error) =>
+            of(ReadingListActions.failedAddToReadingList({ book, error }))
           )
         )
       )
@@ -46,8 +46,8 @@ export class ReadingListEffects implements OnInitEffects {
           map(() =>
             ReadingListActions.confirmedRemoveFromReadingList({ item })
           ),
-          catchError(() =>
-            of(ReadingListActions.failedRemoveFromReadingList({ item }))
+          catchError((error) =>
+            of(ReadingListActions.failedRemoveFromReadingList({ item, error }))
           )
         )
       )
