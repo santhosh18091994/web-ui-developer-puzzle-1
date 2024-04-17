@@ -9,6 +9,7 @@ export const READING_LIST_FEATURE_KEY = 'readingList';
 export interface State extends EntityState<ReadingListItem> {
   loaded: boolean;
   error: null | string;
+  isMarkAsFinishedSuccess:boolean;
 }
 
 export interface ReadingListPartialState {
@@ -23,7 +24,8 @@ export const readingListAdapter: EntityAdapter<ReadingListItem> = createEntityAd
 
 export const initialState: State = readingListAdapter.getInitialState({
   loaded: false,
-  error: null
+  error: null,
+  isMarkAsFinishedSuccess:false
 });
 
 const readingListReducer = createReducer(
@@ -67,8 +69,19 @@ const readingListReducer = createReducer(
       ...state,
       error: action.error
     };
-  }
-)
+  }),
+  on(ReadingListActions.confirmedMarkAsFinish, (state, action) =>{
+    return readingListAdapter.upsertOne({...action.item},{
+      ...state,
+      isMarkAsFinishedSuccess:true
+    });
+  }),
+  on(ReadingListActions.failedMarkAsFinish, (state, action) =>{
+    return {
+      ...state,
+      isMarkAsFinishedSuccess:false
+    };
+  }),
 );
 
 export function reducer(state: State | undefined, action: Action) {

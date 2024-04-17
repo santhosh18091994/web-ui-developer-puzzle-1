@@ -32,10 +32,15 @@
   }
 
   &--details--title,
-  &--details--author {
+  &--details--author,
+  &--details--finished {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+  &--actions {
+    flex-direction: row !important;
+    gap: 5px;
   }
 }
 

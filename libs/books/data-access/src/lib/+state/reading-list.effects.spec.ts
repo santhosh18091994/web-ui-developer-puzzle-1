@@ -4,7 +4,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 
-import { SharedTestingModule } from '@tmo/shared/testing';
+import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing';
 import { ReadingListEffects } from './reading-list.effects';
 import * as ReadingListActions from './reading-list.actions';
 
@@ -40,6 +40,28 @@ describe('ToReadEffects', () => {
       });
 
       httpMock.expectOne('/api/reading-list').flush([]);
+    });
+    
+    
+    it('should work mark as finish book', done => {
+      actions = new ReplaySubject();
+      const item= createReadingListItem('A');
+      actions.next(ReadingListActions.markAsFinish({item}));
+
+      effects.finishBook$.subscribe(action => {
+        expect(action).toEqual(
+          ReadingListActions.confirmedMarkAsFinish({item})
+        );
+        done();
+      });
+
+      httpMock.expectOne(`/api/reading-list/${item.bookId}/finished`).flush({item});
+    });
+
+    it('should remove subscriptions and clear when leave page', () => {
+      const unsubscribeSpy = jest.spyOn(effects.destroyed$, 'unsubscribe');
+      effects.ngOnDestroy();
+      expect(unsubscribeSpy).toHaveBeenCalled();
     });
   });
 });
